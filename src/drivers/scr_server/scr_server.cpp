@@ -71,7 +71,7 @@ static int UDP_TIMEOUT = UDP_DEFAULT_TIMEOUT;
 
 #define RACE_RESTART 1
 //#define __STEP_LIMIT__ 10000
-//#define __DISABLE_RESTART__
+#define __DISABLE_RESTART__
 //#define __PRINT_RACE_RESULTS__
 
 double __SENSORS_RANGE__;
