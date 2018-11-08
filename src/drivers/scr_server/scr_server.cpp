@@ -25,6 +25,7 @@
 #include <iostream>
 #include <sstream>
 #include <ctime>
+#include <string>
 
 #include <tgf.h>
 #include <track.h>
@@ -55,6 +56,7 @@ typedef struct sockaddr_in tSockAddrIn;
 #include <netdb.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <sys/types.h>
 #endif
 
 /*** defines for UDP *****/
@@ -71,7 +73,7 @@ static int UDP_TIMEOUT = UDP_DEFAULT_TIMEOUT;
 
 #define RACE_RESTART 1
 //#define __STEP_LIMIT__ 10000
-#define __DISABLE_RESTART__
+//#define __DISABLE_RESTART__
 //#define __PRINT_RACE_RESULTS__
 
 double __SENSORS_RANGE__;
@@ -235,10 +237,13 @@ newrace(int index, tCarElt* car, tSituation *s)
     // Bind listen socket to listen port.
     serverAddress[index].sin_family = AF_INET;
     serverAddress[index].sin_addr.s_addr = htonl(INADDR_ANY);
-    if(const char* env_p = std::getenv("TORCS_PORT"))
+
+    if(const char* env_p = std::getenv("TORCS_PORT")){
     	serverAddress[index].sin_port = htons(std::atoi(env_p)+index);
-    else
+    }
+    else{
     	serverAddress[index].sin_port = htons(UDP_LISTEN_PORT+index);
+    }
 
     if (bind(listenSocket[index],
              (struct sockaddr *) &serverAddress[index],
@@ -251,7 +256,7 @@ newrace(int index, tCarElt* car, tSituation *s)
     // Wait for connections from clients.
     listen(listenSocket[index], 5);
     if(const char* env_p = std::getenv("TORCS_PORT"))
-	std::cout << "Waiting for request on port " << std::atoi(env_p)+index << "\n";
+	    std::cout << "Waiting for request on port " << std::atoi(env_p)+index << "\n";
     else
     	std::cout << "Waiting for request on port " << UDP_LISTEN_PORT+index << "\n";
 	    
@@ -298,7 +303,10 @@ newrace(int index, tCarElt* car, tSituation *s)
 				}
             }
             char line[UDP_MSGLEN];
-            sprintf(line,"***identified***");
+            pid_t pid = getpid();
+
+            sprintf(line,"***identified***:%d",int(pid));
+            //sprintf(line,"***identified***");
             // Sending the car state to the client
             if (sendto(listenSocket[index], line, strlen(line) + 1, 0,
                        (struct sockaddr *) &clientAddress[index],
