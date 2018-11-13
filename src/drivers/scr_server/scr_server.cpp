@@ -26,6 +26,7 @@
 #include <sstream>
 #include <ctime>
 #include <cstdlib>
+#include <sys/types.h>
 
 #include <tgf.h>
 #include <track.h>
@@ -295,7 +296,9 @@ newrace(int index, tCarElt* car, tSituation *s)
 				}
             }
             char line[UDP_MSGLEN];
-            sprintf(line,"***identified***");
+            // sprintf(line,"***identified***");
+            pid_t pid = getpid();
+            sprintf(line,"***identified***:%d",int(pid));
             // Sending the car state to the client
             if (sendto(listenSocket[index], line, strlen(line) + 1, 0,
                        (struct sockaddr *) &clientAddress[index],
