@@ -26,7 +26,7 @@
 #include <stdexcept>
 #ifdef WIN32
 #include <float.h>
-#define isnan _isnan
+// #define isnan _isnan
 #endif
 
 
@@ -370,7 +370,7 @@ void EstimateSphere (std::vector<Vector> P, ParametricSphere* sphere)
 				}
 				delta_total += delta;
 			}
-			if (isnan(r)) {
+			if (std::isnan(r)) {
 				for (i=0; i<d; i++) {
 					center[i] =  ((*(sphere->C))[i] - mean[i]) / scale;
 				}
