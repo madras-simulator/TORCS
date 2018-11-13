@@ -25,6 +25,7 @@
 #include <iostream>
 #include <sstream>
 #include <ctime>
+#include <cstdlib>
 
 #include <tgf.h>
 #include <track.h>
@@ -247,8 +248,10 @@ newrace(int index, tCarElt* car, tSituation *s)
     // Wait for connections from clients.
     listen(listenSocket[index], 5);
 
-    std::cout << "Waiting for request on port " << UDP_LISTEN_PORT+index << "\n";
-
+    if(const char* env_p = std::getenv("TORCS_PORT"))
+	    std::cout << "Waiting for request on port " << std::atoi(env_p)+index << "\n";
+    else
+    	std::cout << "Waiting for request on port " << UDP_LISTEN_PORT+index << "\n";
     // Loop until a client identifies correctly
     while (!identified)
     {
