@@ -234,8 +234,10 @@ newrace(int index, tCarElt* car, tSituation *s)
     // Bind listen socket to listen port.
     serverAddress[index].sin_family = AF_INET;
     serverAddress[index].sin_addr.s_addr = htonl(INADDR_ANY);
-    serverAddress[index].sin_port = htons(UDP_LISTEN_PORT+index);
-
+    if(const char* env_p = getenv("TORCS_PORT"))
+        serverAddress[index].sin_port = htons(atoi(env_p)+index);
+    else
+        serverAddress[index].sin_port = htons(UDP_LISTEN_PORT+index);
     if (bind(listenSocket[index],
              (struct sockaddr *) &serverAddress[index],
              sizeof(serverAddress[index])) < 0)
@@ -247,8 +249,11 @@ newrace(int index, tCarElt* car, tSituation *s)
     // Wait for connections from clients.
     listen(listenSocket[index], 5);
 
-    std::cout << "Waiting for request on port " << UDP_LISTEN_PORT+index << "\n";
-
+    if(const char* env_p = getenv("TORCS_PORT"))
+	    std::cout << "Waiting for request on port " << atoi(env_p)+index << "\n";
+    else
+    	std::cout << "Waiting for request on port " << UDP_LISTEN_PORT+index << "\n";
+    
     // Loop until a client identifies correctly
     while (!identified)
     {
